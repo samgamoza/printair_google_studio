@@ -11,20 +11,15 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// GET PROJECTS
-app.get('/api/projects', async (req, res) => {
-    const result = await pool.query("SELECT * FROM projects ORDER BY created_at DESC");
-    res.json(result.rows);
-});
-
-// POST PROJECT
 app.post('/api/projects', async (req, res) => {
-    const { title, quantity, category } = req.body;
-    const result = await pool.query(
-        "INSERT INTO projects (title, quantity, category) VALUES ($1, $2, $3) RETURNING *",
-        [title, quantity, category]
-    );
+    const { title, quantity } = req.body;
+    const result = await pool.query("INSERT INTO projects (title, quantity) VALUES ($1, $2) RETURNING *", [title, quantity]);
     res.json(result.rows[0]);
 });
 
-app.listen(process.env.PORT || 3000, () => console.log('PrintAir Core Running'));
+app.get('/api/projects', async (req, res) => {
+    const result = await pool.query("SELECT * FROM projects ORDER BY id DESC");
+    res.json(result.rows);
+});
+
+app.listen(process.env.PORT || 3000, () => console.log('PrintAir Core Online'));
